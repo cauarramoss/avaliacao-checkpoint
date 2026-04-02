@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:usedev_uninassau/src/widgets/hero_section_widget.dart';
+import 'package:usedev_uninassau/src/widgets/product_card_widget.dart';
 
 
 
@@ -39,6 +40,15 @@ class _InitialScreenState extends State<InitialScreen> {
                 fontWeight: .bold,
                 color: Color(0xFF0B254B),
                 fontFamily: 'Montserrat'
+              ),
+            ),
+            ListView.builder(
+              itemCount: 5,
+              shrinkWrap: true,
+              itemBuilder: (context, index) => ProductCardWidget(
+                url: 'https://placehold.co/600x400.png',
+                nome: 'Produto 0$index',
+                preco: '10$index,00',
               ),
             ),
           ],
