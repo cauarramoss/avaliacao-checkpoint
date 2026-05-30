@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 
@@ -25,7 +26,7 @@ class HeroSectionWidget extends StatelessWidget {
           Text.rich(
             textAlign: .center,
             style: TextStyle(
-              fontFamily: 'Montserrat',
+              fontFamily: GoogleFonts.orbitron().fontFamily,
               fontSize: 50,
               fontWeight: .bold,
             ),
@@ -50,7 +51,7 @@ class HeroSectionWidget extends StatelessWidget {
             child: Text(
               'Ver as Novidades',
               style: TextStyle(
-                fontFamily: 'Montserrat',
+                fontFamily: GoogleFonts.poppins().fontFamily,
                 fontSize: 25,
                 color: Colors.white,
                 fontWeight: .bold,

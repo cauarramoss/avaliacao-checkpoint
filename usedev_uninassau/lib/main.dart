@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:usedev_uninassau/src/screens/initial_screen.dart';
+import 'package:usedev_uninassau/src/screens/login_screen.dart';
 
 
 void main() {
@@ -18,8 +20,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
         ),
+        textTheme: GoogleFonts.montserratTextTheme(),
       ),
-      home: const InitialScreen(),
+      home: const LoginScreen(),
     );
   }
 }
