@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final LoginService _loginService = LoginService();
   bool _isLoading = false;
   bool _isAuthenticated = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -29,18 +30,12 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isAuthenticated = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Usuário já autenticado.'),
-          backgroundColor: Colors.green,
-        ),
-      );
     }
   }
 
   Future<void> _handleLogin() async {
     final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+    final password = _passwordController.text; // Sem trim na senha
 
     if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -53,21 +48,26 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    final success = await _loginService.login(username, password);
+    // Retorna null se sucesso, ou String com o erro
+    final result = await _loginService.login(username, password);
 
     if (mounted) {
       setState(() {
         _isLoading = false;
       });
 
-      if (success) {
+      if (result == null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const InitialScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Usuário ou senha incorretos.')),
+          SnackBar(
+            content: Text(result),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     }
@@ -84,11 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo do UseDev
-                Image.asset(
-                  'assets/logo_usedev.png',
-                  height: 60,
-                ),
+                Image.asset('assets/logo_usedev.png', height: 60),
                 const SizedBox(height: 60),
                 Text(
                   'Login',
@@ -103,51 +99,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: Text(
-                      'Você já está logado no sistema.',
-                      style: GoogleFonts.poppins(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      'Usuário já autenticado no dispositivo.',
+                      style: GoogleFonts.poppins(color: Colors.green, fontWeight: FontWeight.bold),
                     ),
                   ),
-                // Campo de Usuário
                 TextField(
                   controller: _usernameController,
                   enabled: !_isAuthenticated,
                   decoration: InputDecoration(
                     labelText: 'Usuário',
-                    hintText: 'Digite seu username',
                     prefixIcon: const Icon(Icons.person_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: const BorderSide(color: Color(0xFF780BF7), width: 2),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Campo de Senha
                 TextField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   enabled: !_isAuthenticated,
                   decoration: InputDecoration(
                     labelText: 'Senha',
-                    hintText: 'Digite sua senha',
                     prefixIcon: const Icon(Icons.lock_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: const BorderSide(color: Color(0xFF780BF7), width: 2),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Botão de Login
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -155,14 +135,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: (_isLoading || _isAuthenticated) ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF780BF7),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
-                            _isAuthenticated ? 'Já Autenticado' : 'Entrar',
+                            'Entrar',
                             style: GoogleFonts.montserrat(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -173,12 +151,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 if (_isAuthenticated)
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const InitialScreen()),
-                      );
-                    },
+                    onPressed: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const InitialScreen()),
+                    ),
                     child: const Text('Ir para a Home'),
                   ),
               ],
